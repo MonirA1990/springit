@@ -1,6 +1,7 @@
 package com.vega.springit;
 
 import org.aspectj.weaver.patterns.ArgsAnnotationPointcut;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +28,9 @@ public class SpringitApplication {
 		SpringApplication.run(SpringitApplication.class, args);
 	}
 	
-	//@Bean
-	CommandLineRunner runner(LinkRepository linkRepository, CommentRepository commentRepository) {
-		return args -> {
-			Link link = new Link("Getting Started with Spring Boot","https://www.google.com");
-			linkRepository.save(link);
-			
-			Comment comment = new Comment("This is awesome", link);
-			commentRepository.save(comment);
-			
-			link.addComment(comment);
-			System.out.println("==========Test Link and Comment Added==========");
-		};
+	@Bean
+	public PrettyTime prettyTime() {
+		return new PrettyTime();
 	}
 
 }
