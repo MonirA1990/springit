@@ -28,15 +28,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.requestMatchers(EndpointRequest.to("info")).permitAll()
 			.requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole("ACTUATOR")
 			.antMatchers("/actuator/").hasRole("ADMIN")
-			.antMatchers("/link/submit").hasRole("USER")
+			.antMatchers("/link/submit").hasAnyRole("USER", "ADMIN")
             .antMatchers("/link/**").permitAll()
             .antMatchers("/").permitAll()
             .antMatchers("/h2-console/**").permitAll()
             .and()
 	        .formLogin()
+	        .loginPage("/login")
+	        .permitAll()
+	        .usernameParameter("email")
 	        .and()
-	        .csrf().disable()
-	        .headers().frameOptions().disable();
+	        .logout()
+	        .and()
+	        .rememberMe();
+//	        .and()
+//	        .csrf().disable()
+//	        .headers().frameOptions().disable();
 	}
 	
 	@Override
