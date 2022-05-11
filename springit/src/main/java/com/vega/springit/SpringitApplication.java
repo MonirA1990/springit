@@ -19,7 +19,6 @@ import com.vega.springit.repository.CommentRepository;
 import com.vega.springit.repository.LinkRepository;
 
 @SpringBootApplication
-@EnableJpaAuditing
 public class SpringitApplication {
 	
 	private static final Logger log = LoggerFactory.getLogger(SpringitApplication.class);

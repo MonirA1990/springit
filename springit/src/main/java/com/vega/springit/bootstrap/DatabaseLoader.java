@@ -1,30 +1,66 @@
 package com.vega.springit.bootstrap;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+
+import javax.websocket.EncodeException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 import com.vega.springit.domain.Link;
+import com.vega.springit.domain.Role;
+import com.vega.springit.domain.User;
 import com.vega.springit.repository.CommentRepository;
 import com.vega.springit.repository.LinkRepository;
+import com.vega.springit.repository.RoleRepository;
+import com.vega.springit.repository.UserRepository;
+import com.vega.springit.security.UserDetailsServiceImpl;
 
 @Component
 public class DatabaseLoader implements CommandLineRunner{
 
+	private RoleRepository roleRepository;
+	private UserRepository userRepository;
     private LinkRepository linkRepository;
     private CommentRepository commentRepository;
 
     @Autowired
-    public DatabaseLoader(LinkRepository linkRepository, CommentRepository commentRepository) {
+    public DatabaseLoader(UserRepository userRepository, RoleRepository roleRepository, LinkRepository linkRepository, CommentRepository commentRepository) {
         this.linkRepository = linkRepository;
         this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
     public void run(String... args) {
+    	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    	String secretString = "{bcrypt}" + encoder.encode("password");
+    	
+    	Role userRole = new Role("ROLE_USER");
+    	roleRepository.save(userRole);
+    	Role adminRole = new Role("ROLE_ADMIN");
+    	roleRepository.save(adminRole);
+    	
+    	User user = new User("user@gmail.com", secretString, true);
+    	user.addRole(userRole);
+    	userRepository.save(user);
+    	
+    	User admin = new User("admin@gmail.com", secretString, true);
+    	admin.addRole(adminRole);
+    	userRepository.save(admin);
+    	
+    	User master = new User("master@gmail.com", secretString, true);
+    	master.addRoles(new HashSet<>(Arrays.asList(userRole, adminRole)));
+    	userRepository.save(master);
+ 
+    	
         Map<String,String> links = new HashMap<>();
         links.put("Securing Spring Boot APIs and SPAs with OAuth 2.0","https://auth0.com/blog/securing-spring-boot-apis-and-spas-with-oauth2/?utm_source=reddit&utm_medium=sc&utm_campaign=springboot_spa_securing");
         links.put("Easy way to detect Device in Java Web Application using Spring Mobile - Source code to download from GitHub","https://www.opencodez.com/java/device-detection-using-spring-mobile.htm");
