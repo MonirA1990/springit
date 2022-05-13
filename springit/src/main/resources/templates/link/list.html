@@ -11,9 +11,9 @@
         <!-- links -->
         <div class="row link" th:each="link : ${links}">
             <div class="col-1">
-                <div><a href="#" class="upvote"><i class="fas fa-arrow-up"></i></a></div>
-                <div><span class="votecount">3</span></div>
-                <div><a href="#" class="downvote"><i class="fas fa-arrow-down"></i></a></div>
+                <div><a href="#" class="upvote" th:data-id="${link.getId()}"><i class="fas fa-arrow-up"></i></a></div>
+                <div><span class="votecount" th:id="|votecount-${link.getId()}|" th:text="${link.getVoteCount()}">3</span></div>
+                <div><a href="#" class="downvote" th:data-id="${link.getId()}" th:disabled="true"><i class="fas fa-arrow-down"></i></a></div>
             </div>
             <div class="col-11">
                 <p class="title">
@@ -36,5 +36,33 @@
 
     </div>
 
+	<script sec:authorize="isFullyAuthenticated()">
+		var elements = document.querySelectorAll(".upvote, .downvote");
+		for(let index=0; index < elements.length; index++){
+			//console.log(elements[index]);
+			elements[index].addEventListener("click", function(){
+				var direction = 1;
+				if(elements[index].className === "downvote"){
+					direction = -1;
+				}
+				var linkID = elements[index].getAttribute("data-id");
+				var vote = document.getElementById("votecount-" + linkID);
+				var voteCount = vote.innerHTML;
+				
+				fetch("http://localhost:8080/vote/link/" + linkID + "/direction/" + direction + "/votecount/" + voteCount)
+				.then(response => {
+					if (!response.ok) {
+			            // get error message from body or default to response status
+			            const error = response.status;
+			            return Promise.reject(error);
+			        }
+			        return response.json();
+				})
+				.then(data => vote.innerHTML = data)
+				.catch(error => console.error("Error" + error));
+				
+			});
+		}
+	</script>
 </body>
 </html>

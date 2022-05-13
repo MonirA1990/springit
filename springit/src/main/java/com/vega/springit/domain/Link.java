@@ -50,6 +50,11 @@ public class Link extends Auditable{
 	@OneToMany(mappedBy = "link")
 	@ToString.Exclude
 	private List<Comment> comments = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "link")
+	private List<Vote> votes = new ArrayList<>(); 
+	
+	private int voteCount = 0;
 
 	public void addComment(Comment comment) {
 		this.comments.add(comment);

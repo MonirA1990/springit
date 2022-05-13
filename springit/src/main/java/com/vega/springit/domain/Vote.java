@@ -3,18 +3,32 @@ package com.vega.springit.domain;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString
 @NoArgsConstructor
-public class Vote {
+public class Vote extends Auditable {
 
 	@Id
 	@GeneratedValue
 	private Long id;
-	private int vote;
+	
+	@NonNull
+	private short direction;
+	
+	@NonNull
+	@ManyToOne
+	private Link link;
 	
 }
