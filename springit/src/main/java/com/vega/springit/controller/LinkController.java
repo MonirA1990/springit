@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,7 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.vega.springit.domain.Comment;
 import com.vega.springit.domain.Link;
+import com.vega.springit.repository.CommentRepository;
 import com.vega.springit.repository.LinkRepository;
 
 @Controller
@@ -32,9 +35,12 @@ public class LinkController {
 
 	private LinkRepository linkRepository;
 
+	private CommentRepository commentRepository;
+
 	@Autowired
-	public LinkController(LinkRepository linkRepository) {
+	public LinkController(LinkRepository linkRepository, CommentRepository commentRepository) {
 		this.linkRepository = linkRepository;
+		this.commentRepository = commentRepository;
 	}
 
 	// list
@@ -48,9 +54,14 @@ public class LinkController {
 	public String read(@PathVariable Long id, Model model) {
 		Optional<Link> link = linkRepository.findById(id);
 		if (link.isPresent()) {
+			Link currentLink = link.get();
+			Comment comment = new Comment();
+	        comment.setLink(currentLink);
+	        model.addAttribute("comment",comment);
+	        model.addAttribute("link",currentLink);
 			if(!model.containsAttribute("success"))
 				model.addAttribute("success", false);
-			model.addAttribute("link", link.get());
+		
 			return "link/view";
 		} else {
 			return "redirect:/";
@@ -76,5 +87,16 @@ public class LinkController {
 		}
 		model.addAttribute("link", link);
 		return "link/submit";
+	}
+	
+	@PostMapping("/link/comments")
+	public String addComment(@Valid Comment comment, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+	    if( bindingResult.hasErrors() ) {
+	        logger.info("Something went wrong.");
+	    } else {
+	        logger.info("New Comment Saved!");
+	        commentRepository.save(comment);
+	    }
+	    return "redirect:/link/" + comment.getLink().getId();
 	}
 }
