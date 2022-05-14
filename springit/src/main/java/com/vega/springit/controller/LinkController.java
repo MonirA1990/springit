@@ -28,32 +28,30 @@ import com.vega.springit.domain.Comment;
 import com.vega.springit.domain.Link;
 import com.vega.springit.repository.CommentRepository;
 import com.vega.springit.repository.LinkRepository;
+import com.vega.springit.service.LinkService;
 
 @Controller
 public class LinkController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LinkController.class);
 
-	private LinkRepository linkRepository;
-
-	private CommentRepository commentRepository;
+	private final LinkService linkService;
 
 	@Autowired
-	public LinkController(LinkRepository linkRepository, CommentRepository commentRepository) {
-		this.linkRepository = linkRepository;
-		this.commentRepository = commentRepository;
+	public LinkController(LinkService linkService) {
+		this.linkService = linkService;
 	}
 
 	// list
 	@GetMapping("/")
 	public String list(Model model) {
-		model.addAttribute("links", linkRepository.findAll());
+		model.addAttribute("links", linkService.findAll());
 		return "link/list";
 	}
 
 	@GetMapping("/link/{id}")
 	public String read(@PathVariable Long id, Model model) {
-		Optional<Link> link = linkRepository.findById(id);
+		Optional<Link> link = linkService.findById(id);
 		if (link.isPresent()) {
 			Link currentLink = link.get();
 			Comment comment = new Comment();
@@ -80,7 +78,7 @@ public class LinkController {
 	public String createLink(@Valid Link link, BindingResult bindingResult, Model model,
 			RedirectAttributes redirectAttributes) {
 		if (!bindingResult.hasErrors()) {
-			linkRepository.save(link);
+			linkService.saveLink(link);
 			redirectAttributes
 				.addAttribute("id", link.getId())
 				.addFlashAttribute("success", true);
@@ -97,7 +95,7 @@ public class LinkController {
 	        logger.info("Something went wrong.");
 	    } else {
 	        logger.info("New Comment Saved!");
-	        commentRepository.save(comment);
+	        linkService.saveComment(comment);
 	    }
 	    return "redirect:/link/" + comment.getLink().getId();
 	}
