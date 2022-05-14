@@ -86,7 +86,7 @@ public class DatabaseLoader implements CommandLineRunner {
             Comment comments[] = {spring,security,pwa};
             for(Comment comment : comments) {
                 commentRepository.save(comment);
-                link.addComment(comment);
+                //link.addComment(comment);
             }
         });
 

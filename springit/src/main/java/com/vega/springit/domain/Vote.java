@@ -29,6 +29,7 @@ public class Vote extends Auditable {
 	
 	@NonNull
 	@ManyToOne
+	@ToString.Exclude
 	private Link link;
 	
 }
