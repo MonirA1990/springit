@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layouts/main_layout :: head(title = 'Springit - Login')}">
+</head>
+<body>
+
+    <nav th:replace="~{layouts/main_layout :: nav}"></nav>
+    <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
+
+    <div class="container">  
+    	<div class="row">
+    		<div class="col-md-3"></div>
+    		<div class="col-md-6 alert alert-success" role="alert">
+			    <h1>Springit Welcome</h1>
+			    <p th:text="|Dear ${user.getFullName()}|">Dear Username</p>
+			    <p>Welcome to your new favorite site.</p>
+    		</div>
+    		<div class="col-md-3"></div>
+	    </div>
+    </div>
+</body>
+</html>

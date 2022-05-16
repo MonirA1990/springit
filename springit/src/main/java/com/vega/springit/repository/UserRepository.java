@@ -10,4 +10,5 @@ import com.vega.springit.domain.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByEmail(String email);
+	Optional<User> findByEmailAndActivationCode(String email, String activationCode);
 }
